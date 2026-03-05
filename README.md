@@ -1,36 +1,193 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 📚 Bookified – AI Voice Book Companion
 
-## Getting Started
+![Project Status](https://img.shields.io/badge/status-in--progress-yellow)
 
-First, run the development server:
+This project is currently **in progress** and is being built while following the **JavaScript Mastery Next.js 16 course**.
+
+The goal of this project is to create an **AI-powered platform that enables real-time voice conversations with books**, allowing users to upload PDFs and interact with them using natural voice dialogue.
+
+The system transforms static text into an **interactive conversational experience**, combining AI voice synthesis, authentication, and real-time transcripts in a modern full-stack architecture.
+
+![Next.js](https://img.shields.io/badge/-Next.js-000000?style=flat-square&logo=next.js) ![TypeScript](https://img.shields.io/badge/-TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white) ![MongoDB](https://img.shields.io/badge/-MongoDB-4EA94B?style=flat-square&logo=mongodb&logoColor=white) ![Tailwind](https://img.shields.io/badge/-TailwindCSS-38BDF8?style=flat-square&logo=tailwind-css&logoColor=white) ![Clerk](https://img.shields.io/badge/-Clerk-6C47FF?style=flat-square) ![Vapi](https://img.shields.io/badge/-Vapi-111111?style=flat-square) ![ElevenLabs](https://img.shields.io/badge/-ElevenLabs-000000?style=flat-square)
+
+---
+
+# 📌 Project Overview
+
+Bookified is designed to demonstrate how modern AI tools can be integrated into a full-stack web application.
+
+The platform allows users to:
+
+- Upload PDF books
+- Extract and process text from documents
+- Interact with books through **voice conversations**
+- Generate **AI-powered summaries**
+- Maintain **conversation transcripts**
+- Manage a personal library of uploaded content
+
+The project explores how to build **AI-powered interactive knowledge systems** using modern web technologies.
+
+---
+
+## 📌 Project Retrospective
+
+- 📄 [View the Project Retrospective](./PROJECT_RETROSPECTIVE.md)
+
+Outlines key technical learnings, challenges faced, and how this project maps to industry practices.
+
+---
+
+# 🎯 Learning Goals
+
+This project focuses on learning and implementing:
+
+- AI voice interfaces
+- Full-stack Next.js application architecture
+- Document ingestion pipelines
+- AI embeddings and context retrieval
+- Secure authentication systems
+- Scalable database design
+- Modern UI systems using reusable components
+
+---
+
+# ⚙️ Tech Stack
+
+**Next.js 16** – Full-stack React framework for building the application  
+**TypeScript** – Static typing for maintainable and scalable code  
+**MongoDB & Mongoose** – Database for storing users, books, and transcripts  
+**Vapi** – Real-time voice AI conversation engine  
+**ElevenLabs** – Natural AI voice synthesis and persona previews  
+**Clerk** – Authentication and user management  
+**Tailwind CSS** – Utility-first styling framework  
+**shadcn/ui** – Accessible component system built on Tailwind and Radix UI
+
+---
+
+# 🔋 Features
+
+👉 **PDF Upload & Processing**  
+Upload books as PDFs and automatically extract text for AI interaction.
+
+👉 **Voice Conversations with Books**  
+Speak directly to your uploaded content and receive real-time AI responses.
+
+👉 **AI Voice Personas**  
+Preview and select natural-sounding AI voices powered by ElevenLabs.
+
+👉 **Real-Time Transcripts**  
+Automatically capture conversation transcripts for later reference.
+
+👉 **Library Management**  
+Manage uploaded books and browse your personal reading library.
+
+👉 **Secure Authentication**  
+Sign in and manage accounts using Clerk authentication.
+
+👉 **AI-Powered Summaries**  
+Generate quick summaries and insights from long documents.
+
+👉 **Modern UI System**  
+Built with reusable components using **shadcn/ui** and **Tailwind CSS**.
+
+---
+
+# 🧠 Architecture Goals
+
+- Modular full-stack Next.js architecture
+- Clean separation of UI, API routes, and services
+- Efficient document ingestion and processing
+- Real-time AI conversation handling
+- Secure authentication and user sessions
+- Scalable data storage with MongoDB
+
+---
+
+# 🤸 Quick Start
+
+## ✅ Prerequisites
+
+Make sure you have the following installed:
+
+- Git
+- Node.js
+- npm
+
+---
+
+## 📦 Install Dependencies
+
+```bash
+npm install
+```
+
+---
+
+## 🔐 Set Up Environment Variables
+
+Create a `.env` file in the root of your project and add the following:
+
+```
+NODE_ENV=development
+NEXT_PUBLIC_BASE_URL=
+
+# Clerk
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=
+CLERK_SECRET_KEY=
+
+# MongoDB
+MONGODB_URI=
+
+# Vapi
+NEXT_PUBLIC_VAPI_API_KEY=
+VAPI_SERVER_SECRET=
+
+# Google Gemini
+GOOGLE_GEMINI_API_KEY=
+
+# ElevenLabs
+ELEVENLABS_API_KEY=
+```
+
+Replace the placeholder values with your own credentials.
+
+---
+
+## 🚀 Run the Project Locally
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Then open:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```
+http://localhost:3000
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+# 📺 Course Link
 
-To learn more about Next.js, take a look at the following resources:
+This project is being built while following the **JavaScript Mastery Next.js 16 course**.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Watch the full tutorial:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+https://www.youtube.com/watch?v=pbOXOY78dNA
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+# 📄 License
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+This project is licensed under the **MIT License**.
+
+---
+
+# ⭐ Support
+
+If you found this project helpful, consider giving it a ⭐ on GitHub.
+
+You can also explore more resources from JavaScript Mastery:
+
+- https://jsmastery.pro
+- https://discord.gg/jsmastery
