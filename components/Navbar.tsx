@@ -1,4 +1,11 @@
 "use client";
+
+import {
+  Show,
+  SignInButton,
+  UserButton,
+  useUser,
+} from "@clerk/nextjs";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
@@ -10,7 +17,8 @@ const navItems = [
 ];
 
 const Navbar = () => {
-  const pathName = usePathname();
+  const pathname = usePathname();
+  const { user } = useUser();
 
   return (
     <header className="w-full fixed z-50 bg-('--big-primary')">
@@ -26,22 +34,41 @@ const Navbar = () => {
         </Link>
 
         <nav className="w-fit flex gap-7.5 items-center">
-          {navItems.map(({ label, href }) => {
-            const isActive =
-              pathName === href || (href !== "/" && pathName.startsWith(href));
-            return (
-              <Link
-                href={href}
-                key={label}
-                className={cn(
-                  "nav-link-base",
-                  isActive ? "nav-link-active" : "text-black hover:opacity-70",
+          {navItems.map(({ label, href }) => (
+            <Link
+              href={href}
+              key={label}
+              className={cn(
+                "nav-link-base",
+                pathname === href || (href !== "/" && pathname.startsWith(href))
+                  ? "nav-link-active"
+                  : "text-black hover:opacity-70",
+              )}
+            >
+              {label}
+            </Link>
+          ))}
+
+          <div className="flex gap-7.5 items-center">
+            <Show when="signed-out">
+              <SignInButton mode="modal">
+                <button className="nav-link-base text-black hover:opacity-70">
+                  Sign in
+                </button>
+              </SignInButton>
+            </Show>
+
+            <Show when="signed-in">
+              <div className="nav-user-link">
+                <UserButton />
+                {user?.firstName && (
+                  <Link href="/subscriptions" className="nav-user-name">
+                    {user.firstName}
+                  </Link>
                 )}
-              >
-                {label}
-              </Link>
-            );
-          })}
+              </div>
+            </Show>
+          </div>
         </nav>
       </div>
     </header>
