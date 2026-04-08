@@ -617,10 +617,10 @@
      VOICE SELECTOR COMPONENT
      =========================================== */
   .voice-selector-options {
-    @apply flex gap-4;
+    @apply grid gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-3;
   }
   .voice-selector-option {
-    @apply flex-1 flex items-center justify-center gap-3 p-4 border border-[var(--border-subtle)] rounded-lg cursor-pointer transition-all;
+    @apply flex min-h-[92px] items-start justify-start gap-3 rounded-xl border border-[var(--border-subtle)] bg-white p-3.5 sm:min-h-[104px] sm:p-4 cursor-pointer transition-all;
     box-shadow: var(--shadow-soft-sm);
 
     &:hover {
@@ -630,6 +630,7 @@
   }
   .voice-selector-option-selected {
     @apply bg-[var(--accent-light)] border-[var(--accent-warm)];
+    box-shadow: 0 0 0 1px rgba(102, 56, 32, 0.12), var(--shadow-soft);
   }
   .voice-selector-option-default {
     @apply bg-white;
@@ -683,10 +684,10 @@
      UPLOAD FORM COMPONENT
      =========================================== */
   .upload-dropzone {
-    @apply flex flex-col items-center justify-center h-[165px] bg-white rounded-[6px] cursor-pointer transition-all;
+    @apply relative flex min-h-[136px] w-full flex-col items-center justify-center rounded-xl border border-dashed border-[#8B7355]/20 bg-white px-4 py-6 text-center cursor-pointer transition-all sm:min-h-[152px] sm:px-6 sm:py-8;
 
     &:hover {
-      @apply bg-gray-50;
+      @apply bg-[#fffaf1] border-[#8B7355]/35;
     }
   }
   .upload-dropzone-uploaded {
@@ -700,13 +701,13 @@
     }
   }
   .upload-dropzone-icon {
-    @apply w-[48px] h-[48px] mb-2 text-[#8B7355];
+    @apply mb-2.5 h-10 w-10 text-[#8B7355] sm:mb-3 sm:h-12 sm:w-12;
   }
   .upload-dropzone-text {
-    @apply text-[#777] text-lg font-medium text-center;
+    @apply text-center text-lg font-semibold leading-tight text-[#6f6252] sm:text-[22px];
   }
   .upload-dropzone-hint {
-    @apply text-[#777] text-sm mt-1;
+    @apply mt-1.5 text-center text-xs text-[#9b8b79] sm:mt-2 sm:text-sm;
   }
   .upload-dropzone-remove {
     @apply flex items-center justify-center w-6 h-6 text-red-500 transition-colors cursor-pointer;
