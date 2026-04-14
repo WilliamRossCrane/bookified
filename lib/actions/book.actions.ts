@@ -135,7 +135,6 @@ export const getBookBySlug = async (slug: string) => {
 
 export const saveBookSegments = async (
   bookId: string,
-  clerkId: string,
   segments: TextSegment[],
 ) => {
   try {
@@ -143,9 +142,26 @@ export const saveBookSegments = async (
 
     console.log("Saving book segments...");
 
+    const { auth } = await import("@clerk/nextjs/server");
+    const { userId } = await auth();
+
+    if (!userId) {
+      throw new Error("Unauthorized");
+    }
+
+    const book = await Book.findById(bookId).select("clerkId").lean();
+
+    if (!book) {
+      throw new Error("Book not found");
+    }
+
+    if (book.clerkId !== userId) {
+      throw new Error("Unauthorized");
+    }
+
     const segmentsToInsert = segments.map(
       ({ text, segmentIndex, pageNumber, wordCount }) => ({
-        clerkId,
+        clerkId: userId,
         bookId,
         content: text,
         segmentIndex,
