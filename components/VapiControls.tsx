@@ -5,7 +5,11 @@ import Image from "next/image";
 import useVapi from "@/hooks/useVapi";
 import { IBook } from "@/types";
 
-const VapiControls = ({ book }: { book: IBook }) => {
+const VapiControls = ({ book }: { book?: IBook }) => {
+  if (!book) {
+    return null;
+  }
+
   const { title, author, coverURL, persona } = book;
   const {
     status,

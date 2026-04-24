@@ -27,14 +27,12 @@ const BookPage = async ({ params }: BookPageProps) => {
     redirect("/");
   }
 
-  const { title, author, coverURL, persona } = bookResult.data;
-
   return (
     <main className="book-page-container">
       <Link href="/" className="back-btn-floating" aria-label="Back to library">
         <ArrowLeft className="size-5 text-[#212a3b]" aria-hidden="true" />
       </Link>
-      <VapiControls />
+      <VapiControls book={bookResult.data} />
     </main>
   );
 };
