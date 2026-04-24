@@ -1,6 +1,6 @@
 import { IBook, Messages } from "@/types";
-import { useAuth } from "@clerk/nextjs";
-import { useEffect, useRef, useState } from "react";
+import { DEFAULT_VOICE } from "@/lib/constants";
+import { useState } from "react";
 
 export type CallStatus =
   | "idle"
@@ -9,16 +9,6 @@ export type CallStatus =
   | "listening"
   | "thinking"
   | "speaking";
-
-const useLatestRef = <T>(value: T) => {
-  const ref = useRef(value);
-
-  useEffect(() => {
-    ref.current = value;
-  }, [value]);
-
-  return ref;
-};
 
 export const useVapi = (book: IBook) => {
   const { userId } = useAuth();
@@ -43,7 +33,7 @@ export const useVapi = (book: IBook) => {
     status === "listening" ||
     status === "thinking" ||
     status === "speaking" ||
-    "starting";
+    status === "starting";
 
   /* Limits:
     // const maxDurationRef = useLatestRef(limits.maxSessionMinutes * 60)
@@ -52,7 +42,19 @@ export const useVapi = (book: IBook) => {
     // const showTimeWarning
     */
 
-  const start = async () => {};
+  const start = async () => {
+    if (!userId) return setLimitError("Please login to start a conversation.");
+
+    setLimitError(null);
+    setStatus("connecting");
+
+    try {
+    } catch (e) {
+      console.error("Error starting call", e);
+      setStatus("idle");
+      setLimitError("An error occurred while starting the call.");
+    }
+  };
   const stop = async () => {};
   const clearErrors = async () => {};
 
