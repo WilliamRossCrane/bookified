@@ -81,9 +81,23 @@ export interface BookCardProps {
   slug: string;
 }
 
+export type MessageRole = "assistant" | "user";
+
 export interface Messages {
-  role: string;
+  role: MessageRole;
   content: string;
+}
+
+export interface StartSessionResult {
+  success: boolean;
+  sessionId?: string;
+  error?: string;
+  maxDurationMinutes?: number;
+}
+
+export interface EndSessionResult {
+  success: boolean;
+  error?: string;
 }
 
 export interface ShadowBoxProps {
