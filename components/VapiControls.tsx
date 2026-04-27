@@ -23,7 +23,6 @@ const VapiControls = ({ book }: { book: IBook }) => {
     clearError,
     limitError,
     isBillingError,
-    maxDurationSeconds,
   } = useVapi(book);
   const router = useRouter();
 
@@ -88,13 +87,15 @@ const VapiControls = ({ book }: { book: IBook }) => {
               )}
               <button
                 onClick={isActive ? stop : start}
-                disabled={status === "connecting"}
+                disabled={
+                  status === "connecting" || status === "starting"
+                }
                 className={`vapi-mic-btn shadow-md !w-[60px] !h-[60px] z-10 ${isActive ? "vapi-mic-btn-active" : "vapi-mic-btn-inactive"}`}
               >
                 {isActive ? (
-                  <Mic className="size-7 text-white" />
-                ) : (
                   <MicOff className="size-7 text-[#212a3b]" />
+                ) : (
+                  <Mic className="size-7 text-[#212a3b]" />
                 )}
               </button>
             </div>
@@ -122,8 +123,7 @@ const VapiControls = ({ book }: { book: IBook }) => {
 
               <div className="vapi-status-indicator">
                 <span className="vapi-status-text">
-                  {formatDuration(duration)}/
-                  {formatDuration(maxDurationSeconds)}
+                  {formatDuration(duration)}
                 </span>
               </div>
             </div>

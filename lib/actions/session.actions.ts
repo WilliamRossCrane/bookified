@@ -1,21 +1,38 @@
 "use server";
 
 import { EndSessionResult, StartSessionResult } from "@/types";
+import { auth } from "@clerk/nextjs/server";
 import { connectToDatabase } from "@/database/mongoose";
 import VoiceSession from "@/database/models/voice-session.model";
+import mongoose from "mongoose";
 import { getCurrentBillingPeriodStart } from "../subscription-constants";
 
 export const startVoiceSession = async (
-  clerkId: string,
   bookId: string,
 ): Promise<StartSessionResult> => {
   try {
+    const { userId } = await auth();
+
+    if (!userId) {
+      return {
+        success: false,
+        error: "Unauthorized",
+      };
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(bookId)) {
+      return {
+        success: false,
+        error: "Invalid book ID.",
+      };
+    }
+
     await connectToDatabase();
 
     // Limits/Plan to see whether a session is allowed.
 
     const session = await VoiceSession.create({
-      clerkId,
+      clerkId: userId,
       bookId,
       startedAt: new Date(),
       billingPeriodStart: getCurrentBillingPeriodStart(),
