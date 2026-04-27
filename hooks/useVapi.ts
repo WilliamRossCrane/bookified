@@ -28,6 +28,7 @@ const VAPI_API_KEY = process.env.NEXT_PUBLIC_VAPI_API_KEY;
 const TIMER_INTERVAL_MS = 1000;
 const SECONDS_PER_MINUTE = 60;
 const TIME_WARNING_THRESHOLD = 60; // Show warning when this many seconds remain
+const DEFAULT_MAX_DURATION_SECONDS = 30 * SECONDS_PER_MINUTE;
 
 let vapi: InstanceType<typeof Vapi>;
 function getVapi() {
@@ -53,6 +54,7 @@ export type CallStatus =
 export function useVapi(book: IBook) {
   const { userId } = useAuth();
   // const { limits } = useSubscription();
+  const maxDurationSeconds = DEFAULT_MAX_DURATION_SECONDS;
 
   const [status, setStatus] = useState<CallStatus>("idle");
   const [messages, setMessages] = useState<Messages[]>([]);
@@ -340,7 +342,7 @@ export function useVapi(book: IBook) {
     stop,
     limitError,
     clearError,
-    // maxDurationSeconds,
+    maxDurationSeconds,
     // remainingSeconds,
     // showTimeWarning,
   };
