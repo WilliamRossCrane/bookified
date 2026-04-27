@@ -81,8 +81,10 @@ export interface BookCardProps {
   slug: string;
 }
 
+export type MessageRole = "assistant" | "user";
+
 export interface Messages {
-  role: string;
+  role: MessageRole;
   content: string;
 }
 
