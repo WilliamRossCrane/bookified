@@ -86,6 +86,18 @@ export interface Messages {
   content: string;
 }
 
+export interface StartSessionResult {
+  success: boolean;
+  sessionId?: string;
+  error?: string;
+  maxDurationMinutes?: number;
+}
+
+export interface EndSessionResult {
+  success: boolean;
+  error?: string;
+}
+
 export interface ShadowBoxProps {
   children: ReactNode;
   className?: string;

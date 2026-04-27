@@ -43,6 +43,7 @@ function getVapi() {
 
 export const useVapi = (book: IBook) => {
   const { userId } = useAuth();
+  const maxDurationSeconds = 30 * 60;
 
   const [status, setStatus] = useState<CallStatus>("idle");
   const [messages, setMessages] = useState<Messages[]>([]);
@@ -121,7 +122,9 @@ export const useVapi = (book: IBook) => {
     isStoppingRef.current = true;
     getVapi().stop();
   };
-  const clearErrors = async () => {};
+  const clearError = () => {
+    setLimitError(null);
+  };
 
   return {
     status,
@@ -132,8 +135,10 @@ export const useVapi = (book: IBook) => {
     duration,
     start,
     stop,
-    clearErrors,
-    // maxDurationSeconds, remainingSeconds, showTimeWarning
+    clearError,
+    limitError,
+    isBillingError: false,
+    maxDurationSeconds,
   };
 };
 
