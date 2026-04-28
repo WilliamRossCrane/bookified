@@ -39,7 +39,7 @@ const VapiControls = ({ book }: { book: IBook }) => {
   }, [isBillingError, limitError, router, clearError]);
 
   const formatDuration = (seconds?: number) => {
-    if (!Number.isFinite(seconds)) {
+    if (typeof seconds !== "number" || !Number.isFinite(seconds)) {
       return "0:00";
     }
 

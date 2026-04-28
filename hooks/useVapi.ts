@@ -8,7 +8,7 @@ import { useAuth } from "@clerk/nextjs";
 
 import { ASSISTANT_ID, DEFAULT_VOICE, VOICE_SETTINGS } from "@/lib/constants";
 import { getVoice } from "@/lib/utils";
-import { IBook, Messages } from "@/types";
+import { IBook, MessageRole, Messages } from "@/types";
 import {
   startVoiceSession,
   endVoiceSession,
@@ -134,7 +134,7 @@ export function useVapi(book: IBook) {
 
       message: (message: {
         type: string;
-        role: string;
+        role: MessageRole;
         transcriptType: string;
         transcript: string;
       }) => {
