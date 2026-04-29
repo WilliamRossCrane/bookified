@@ -12,6 +12,10 @@ import {
   SUBSCRIPTION_PLANS,
   type SubscriptionPlanKey,
 } from "@/lib/subscription-constants";
+import { downgradeCurrentUserToFree } from "@/lib/actions/subscription.actions";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 const PLAN_ORDER: SubscriptionPlanKey[] = ["free", "standard", "pro"];
 
@@ -37,15 +41,45 @@ const formatDescription = (planKey: SubscriptionPlanKey) => {
 };
 
 const SubscriptionPricingTable = () => {
+  const router = useRouter();
   const { plan: currentPlan, isSignedIn } = useSubscriptionPlan();
   const { data: plans, isLoading, error } = usePlans({
     for: "user",
     pageSize: 10,
   });
+  const [isDowngrading, setIsDowngrading] = useState(false);
+  const [optimisticPlanKey, setOptimisticPlanKey] =
+    useState<SubscriptionPlanKey | null>(null);
+
+  const activePlanKey = optimisticPlanKey ?? currentPlan.key;
+  const activePlan = SUBSCRIPTION_PLANS[activePlanKey];
 
   const paidPlansBySlug = new Map(
     (plans ?? []).map((plan) => [plan.slug, plan] as const),
   );
+
+  const handleDowngradeToFree = async () => {
+    try {
+      setIsDowngrading(true);
+      const result = await downgradeCurrentUserToFree();
+
+      if (!result.success) {
+        setOptimisticPlanKey(null);
+        toast.error(result.error);
+        return;
+      }
+
+      setOptimisticPlanKey("free");
+      toast.success("Your subscription has been moved back to Free.");
+      router.refresh();
+    } catch (cancelError) {
+      console.error("Failed to downgrade subscription:", cancelError);
+      setOptimisticPlanKey(null);
+      toast.error("We couldn't downgrade your subscription right now.");
+    } finally {
+      setIsDowngrading(false);
+    }
+  };
 
   return (
     <div className="subscription-shell">
@@ -63,7 +97,7 @@ const SubscriptionPricingTable = () => {
               Current plan
             </span>
             <span className="subscription-plan-summary-value">
-              {currentPlan.label}
+              {activePlan.label}
             </span>
           </div>
         )}
@@ -82,8 +116,12 @@ const SubscriptionPricingTable = () => {
           const paidPlan = planDefinition.clerkPlanSlug
             ? paidPlansBySlug.get(planDefinition.clerkPlanSlug)
             : null;
-          const isCurrentPlan = currentPlan.key === planKey;
+          const isCurrentPlan = activePlanKey === planKey;
           const isPaidPlan = planKey !== "free";
+          const canDowngradeToFree =
+            planKey === "free" &&
+            isSignedIn &&
+            activePlanKey !== "free";
           const isCheckoutReady = isPaidPlan && Boolean(paidPlan?.id);
           const paidPlanId = paidPlan?.id;
 
@@ -148,6 +186,15 @@ const SubscriptionPricingTable = () => {
                     className="subscription-card-button subscription-card-button-disabled"
                   >
                     Current plan
+                  </button>
+                ) : canDowngradeToFree ? (
+                  <button
+                    type="button"
+                    onClick={handleDowngradeToFree}
+                    disabled={isDowngrading}
+                    className={`subscription-card-button ${isDowngrading ? "subscription-card-button-disabled" : ""}`}
+                  >
+                    {isDowngrading ? "Downgrading..." : "Switch to free"}
                   </button>
                 ) : isCheckoutReady ? (
                   <Show when="signed-in">
