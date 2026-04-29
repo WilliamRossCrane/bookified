@@ -7,6 +7,7 @@ import Book from "@/database/models/book.model";
 import BookSegment from "@/database/models/book-segment.model";
 import mongoose from "mongoose";
 import { revalidatePath } from "next/cache";
+import { getCurrentUserSubscription } from "@/lib/subscription";
 
 export const getAllBooks = async (search?: string) => {
   try {
@@ -82,11 +83,18 @@ export const createBook = async (data: CreateBook) => {
     }
 
     // Basic auth check
-    const { auth } = await import("@clerk/nextjs/server");
-    const { userId } = await auth();
+    const { userId, plan } = await getCurrentUserSubscription();
 
     if (!userId || userId !== data.clerkId) {
       return { success: false, error: "Unauthorized" };
+    }
+    const currentBookCount = await Book.countDocuments({ clerkId: userId });
+
+    if (currentBookCount >= plan.limits.maxBooks) {
+      return {
+        success: false,
+        error: `Your ${plan.label} plan allows up to ${plan.limits.maxBooks} book${plan.limits.maxBooks === 1 ? "" : "s"}. Upgrade to add more.`,
+      };
     }
 
     // Create book

@@ -35,6 +35,10 @@ import { useRouter } from "next/navigation";
 import { parsePDFFile } from "@/lib/utils";
 import { upload } from "@vercel/blob/client";
 
+const isUploadPlanLimitError = (error: unknown) =>
+  typeof error === "string" &&
+  /plan allows up to|upgrade to add more/i.test(error);
+
 const UploadForm = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
@@ -131,9 +135,17 @@ const UploadForm = () => {
       });
 
       if (!book.success) {
-        toast.error(
-          typeof book.error === "string" ? book.error : "Failed to create book",
-        );
+        const errorMessage =
+          typeof book.error === "string" ? book.error : "Failed to create book";
+
+        toast.error(errorMessage);
+
+        if (isUploadPlanLimitError(errorMessage)) {
+          setTimeout(() => {
+            router.push("/subscriptions");
+          }, 1200);
+        }
+
         return;
       }
 

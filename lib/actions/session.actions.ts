@@ -1,17 +1,20 @@
 "use server";
 
 import { EndSessionResult, StartSessionResult } from "@/types";
-import { auth } from "@clerk/nextjs/server";
 import { connectToDatabase } from "@/database/mongoose";
 import VoiceSession from "@/database/models/voice-session.model";
 import mongoose from "mongoose";
-import { getCurrentBillingPeriodStart } from "../subscription-constants";
+import {
+  getCurrentBillingPeriodStart,
+  getNextBillingPeriodStart,
+} from "@/lib/subscription-constants";
+import { getCurrentUserSubscription } from "@/lib/subscription";
 
 export const startVoiceSession = async (
   bookId: string,
 ): Promise<StartSessionResult> => {
   try {
-    const { userId } = await auth();
+    const { userId, plan } = await getCurrentUserSubscription();
 
     if (!userId) {
       return {
@@ -28,21 +31,39 @@ export const startVoiceSession = async (
     }
 
     await connectToDatabase();
+    const billingPeriodStart = getCurrentBillingPeriodStart();
 
-    // Limits/Plan to see whether a session is allowed.
+    if (plan.limits.maxSessionsPerMonth !== null) {
+      const billingPeriodEnd = getNextBillingPeriodStart();
+      const currentMonthSessionCount = await VoiceSession.countDocuments({
+        clerkId: userId,
+        startedAt: {
+          $gte: billingPeriodStart,
+          $lt: billingPeriodEnd,
+        },
+      });
+
+      if (currentMonthSessionCount >= plan.limits.maxSessionsPerMonth) {
+        return {
+          success: false,
+          error: `You've reached the ${plan.limits.maxSessionsPerMonth} voice sessions included in your ${plan.label} plan for this month. Upgrade to continue.`,
+        };
+      }
+    }
 
     const session = await VoiceSession.create({
       clerkId: userId,
       bookId,
       startedAt: new Date(),
-      billingPeriodStart: getCurrentBillingPeriodStart(),
+      billingPeriodStart,
       durationSeconds: 0,
     });
 
     return {
       success: true,
       sessionId: session._id.toString(),
-      // maxDurationMinutes: check.maxDurationMinutes,
+      maxDurationMinutes: plan.limits.maxSessionMinutes,
+      planKey: plan.key,
     };
   } catch (e) {
     console.error("Error starting voice session", e);
