@@ -2,7 +2,14 @@
 
 // Create hooks/useVapi.ts: the core hook. Initializes Vapi SDK, manages call lifecycle (idle, connecting, starting, listening, thinking, speaking), tracks messages array + currentMessage streaming, handles duration timer with maxDuration enforcement, session tracking via server actions
 
-import { useState, useEffect, useRef, useCallback, useMemo } from "react";
+import {
+  useState,
+  useEffect,
+  useRef,
+  useCallback,
+  useMemo,
+  useEffectEvent,
+} from "react";
 import Vapi from "@vapi-ai/web";
 import { useAuth } from "@clerk/nextjs";
 
@@ -53,6 +60,7 @@ export function useVapi(book: IBook) {
   const [currentMessage, setCurrentMessage] = useState("");
   const [currentUserMessage, setCurrentUserMessage] = useState("");
   const [duration, setDuration] = useState(0);
+  const [maxDurationSeconds, setMaxDurationSeconds] = useState(0);
   const [limitError, setLimitError] = useState<string | null>(null);
 
   const timerRef = useRef<NodeJS.Timeout | null>(null);
@@ -61,9 +69,16 @@ export function useVapi(book: IBook) {
   const isStoppingRef = useRef(false);
 
   // Keep refs in sync with latest values for use in callbacks
-  // const maxDurationRef = useLatestRef(limits.maxSessionMinutes * 60);
+  const maxDurationRef = useLatestRef(maxDurationSeconds);
   const durationRef = useLatestRef(duration);
   const voice = book.persona || DEFAULT_VOICE;
+  const finalizeSession = useEffectEvent(
+    (sessionId: string, context: "end" | "error" | "unmount") => {
+      endVoiceSession(sessionId, durationRef.current).catch((err) =>
+        console.error(`Failed to end voice session on ${context}:`, err),
+      );
+    },
+  );
 
   // Set up Vapi event listeners
   useEffect(() => {
@@ -84,15 +99,16 @@ export function useVapi(book: IBook) {
             );
             setDuration(newDuration);
 
-            // Check duration limit
-            // if (newDuration >= maxDurationRef.current) {
-            //     vapi.stop();
-            //     setLimitError(
-            //         `Session time limit (${Math.floor(
-            //             maxDurationRef.current / SECONDS_PER_MINUTE,
-            //         )} minutes) reached. Upgrade your plan for longer sessions.`,
-            //     );
-            // }
+            if (
+              maxDurationRef.current > 0 &&
+              newDuration >= maxDurationRef.current
+            ) {
+              isStoppingRef.current = true;
+              setLimitError(
+                `This session reached your ${Math.floor(maxDurationRef.current / 60)}-minute limit. Upgrade your plan for longer sessions.`,
+              );
+              vapi.stop();
+            }
           }
         }, TIMER_INTERVAL_MS);
       },
@@ -111,9 +127,7 @@ export function useVapi(book: IBook) {
 
         // End session tracking
         if (sessionIdRef.current) {
-          endVoiceSession(sessionIdRef.current, durationRef.current).catch(
-            (err) => console.error("Failed to end voice session:", err),
-          );
+          finalizeSession(sessionIdRef.current, "end");
           sessionIdRef.current = null;
         }
 
@@ -190,10 +204,7 @@ export function useVapi(book: IBook) {
 
         // End session tracking on error
         if (sessionIdRef.current) {
-          endVoiceSession(sessionIdRef.current, durationRef.current).catch(
-            (err) =>
-              console.error("Failed to end voice session on error:", err),
-          );
+          finalizeSession(sessionIdRef.current, "error");
           sessionIdRef.current = null;
         }
 
@@ -229,13 +240,12 @@ export function useVapi(book: IBook) {
     });
 
     return () => {
+      const activeSessionId = sessionIdRef.current;
+
       // End active session on unmount
-      if (sessionIdRef.current) {
+      if (activeSessionId) {
         vapi.stop();
-        endVoiceSession(sessionIdRef.current, durationRef.current).catch(
-          (err) =>
-            console.error("Failed to end voice session on unmount:", err),
-        );
+        finalizeSession(activeSessionId, "unmount");
         sessionIdRef.current = null;
       }
       // Cleanup handlers
@@ -244,7 +254,7 @@ export function useVapi(book: IBook) {
       });
       if (timerRef.current) clearInterval(timerRef.current);
     };
-  }, [durationRef, vapi]);
+  }, [maxDurationRef, vapi]);
 
   const start = useCallback(async () => {
     if (!userId) {
@@ -268,8 +278,7 @@ export function useVapi(book: IBook) {
       }
 
       sessionIdRef.current = result.sessionId || null;
-      // Note: Server-returned maxDurationMinutes is informational only
-      // The actual limit is enforced by useLatestRef(limits.maxSessionMinutes * 60)
+      setMaxDurationSeconds((result.maxDurationMinutes ?? 0) * 60);
 
       const firstMessage = `Hey, good to meet you. Quick question before we dive in - have you actually read ${book.title} yet, or are we starting fresh?`;
 
