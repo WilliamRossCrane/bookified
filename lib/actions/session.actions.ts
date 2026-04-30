@@ -1,17 +1,20 @@
 "use server";
 
 import { EndSessionResult, StartSessionResult } from "@/types";
-import { auth } from "@clerk/nextjs/server";
 import { connectToDatabase } from "@/database/mongoose";
 import VoiceSession from "@/database/models/voice-session.model";
 import mongoose from "mongoose";
-import { getCurrentBillingPeriodStart } from "../subscription-constants";
+import {
+  getCurrentBillingPeriodStart,
+  getNextBillingPeriodStart,
+} from "@/lib/subscription-constants";
+import { getCurrentUserSubscription } from "@/lib/subscription";
 
 export const startVoiceSession = async (
   bookId: string,
 ): Promise<StartSessionResult> => {
   try {
-    const { userId } = await auth();
+    const { userId, plan } = await getCurrentUserSubscription();
 
     if (!userId) {
       return {
@@ -28,21 +31,57 @@ export const startVoiceSession = async (
     }
 
     await connectToDatabase();
+    const now = new Date();
+    const billingPeriodStart = getCurrentBillingPeriodStart(now);
+    const billingPeriodEnd = getNextBillingPeriodStart(now);
+    const maxSessionsPerMonth = plan.limits.maxSessionsPerMonth;
+    const billingPeriodQuery = {
+      clerkId: userId,
+      startedAt: {
+        $gte: billingPeriodStart,
+        $lt: billingPeriodEnd,
+      },
+    };
 
-    // Limits/Plan to see whether a session is allowed.
+    if (maxSessionsPerMonth !== null) {
+      const currentMonthSessionCount =
+        await VoiceSession.countDocuments(billingPeriodQuery);
+
+      if (currentMonthSessionCount >= maxSessionsPerMonth) {
+        return {
+          success: false,
+          error: `You've reached the ${maxSessionsPerMonth} voice sessions included in your ${plan.label} plan for this month. Upgrade to continue.`,
+        };
+      }
+    }
 
     const session = await VoiceSession.create({
       clerkId: userId,
       bookId,
-      startedAt: new Date(),
-      billingPeriodStart: getCurrentBillingPeriodStart(),
+      startedAt: now,
+      billingPeriodStart,
       durationSeconds: 0,
     });
+
+    if (maxSessionsPerMonth !== null) {
+      const updatedMonthSessionCount =
+        await VoiceSession.countDocuments(billingPeriodQuery);
+
+      if (updatedMonthSessionCount > maxSessionsPerMonth) {
+        await VoiceSession.deleteOne({ _id: session._id });
+
+        return {
+          success: false,
+          error: `You've reached the ${maxSessionsPerMonth} voice sessions included in your ${plan.label} plan for this month. Upgrade to continue.`,
+        };
+      }
+    }
 
     return {
       success: true,
       sessionId: session._id.toString(),
-      // maxDurationMinutes: check.maxDurationMinutes,
+      maxDurationMinutes: plan.limits.maxSessionMinutes,
+      planKey: plan.key,
     };
   } catch (e) {
     console.error("Error starting voice session", e);

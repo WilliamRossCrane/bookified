@@ -4,6 +4,7 @@ import { Control, FieldPath, FieldValues } from "react-hook-form";
 import { LucideIcon } from "lucide-react";
 import z from "zod";
 import { UploadSchema } from "@/lib/zod";
+import type { SubscriptionPlanKey } from "@/lib/subscription-constants";
 
 // ============================================
 // DATABASE MODELS
@@ -93,6 +94,7 @@ export interface StartSessionResult {
   sessionId?: string;
   error?: string;
   maxDurationMinutes?: number;
+  planKey?: SubscriptionPlanKey;
 }
 
 export interface EndSessionResult {
@@ -129,4 +131,10 @@ export interface FileUploadFieldProps<T extends FieldValues> {
   icon: LucideIcon;
   placeholder: string;
   hint: string;
+}
+
+declare global {
+  interface ClerkAuthorization {
+    plan: "standard" | "pro";
+  }
 }
