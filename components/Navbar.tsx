@@ -3,8 +3,9 @@
 import { Show, SignInButton, UserButton, useUser } from "@clerk/nextjs";
 import Link from "next/link";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { cn } from "@/lib/utils";
+import LibrarySearch from "@/components/LibrarySearch";
 
 const navItems = [
   { label: "Library", href: "/" },
@@ -14,22 +15,34 @@ const navItems = [
 
 const Navbar = () => {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const { user } = useUser();
+  const isLibraryPage = pathname === "/";
+  const currentSearch = searchParams.get("search")?.trim() ?? "";
 
   return (
     <header className="w-full fixed z-50 bg-[var(--bg-primary)]">
-      <div className="wrapper navbar-height py-4 flex justify-between items-center">
-        <Link href="/" className="flex gap-0.5 items-center">
-          <Image
-            src="/assets/logo.png"
-            alt="Bookified"
-            width={42}
-            height={26}
-          />
-          <span className="logo-text">Bookified</span>
-        </Link>
+      <div className="wrapper navbar-height py-4 flex justify-between items-center gap-6">
+        <div className="flex min-w-0 flex-1 items-center gap-5">
+          <Link href="/" className="flex shrink-0 gap-0.5 items-center">
+            <Image
+              src="/assets/logo.png"
+              alt="Bookified"
+              width={42}
+              height={26}
+            />
+            <span className="logo-text">Bookified</span>
+          </Link>
 
-        <nav className="w-fit flex gap-7.5 items-center">
+          {isLibraryPage && (
+            <LibrarySearch
+              initialQuery={currentSearch}
+              className="navbar-search-wrapper"
+            />
+          )}
+        </div>
+
+        <nav className="w-fit shrink-0 flex gap-7.5 items-center">
           {navItems.map(({ label, href }) => (
             <Link
               href={href}
