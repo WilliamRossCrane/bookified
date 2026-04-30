@@ -213,18 +213,20 @@ export function useVapi(book: IBook) {
           return;
         }
 
-        // Final transcript → add to messages
-        if (
-          message.transcriptType === "final" &&
-          message.role &&
-          message.transcript
-        ) {
+        // Final transcript → clear active streaming state, then add valid messages
+        if (message.transcriptType === "final") {
           if (message.role === "assistant") setCurrentMessage("");
           if (message.role === "user") setCurrentUserMessage("");
+          if (!message.role || !message.transcript?.trim()) return;
+          const role = message.role;
+          const transcript = message.transcript;
 
           setMessages((prev) => [
             ...prev,
-            { role: message.role, content: message.transcript },
+            {
+              role,
+              content: transcript,
+            },
           ]);
         }
       },

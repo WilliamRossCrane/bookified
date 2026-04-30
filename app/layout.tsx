@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { ClerkProvider } from "@clerk/nextjs";
 import type { Metadata } from "next";
 import { IBM_Plex_Serif, Mona_Sans } from "next/font/google";
@@ -36,7 +37,9 @@ export default function RootLayout({
         className={`${ibmPlexSerif.variable} ${monaSans.variable} relative font-sans antialiased`}
       >
         <ClerkProvider>
-          <Navbar />
+          <Suspense fallback={null}>
+            <Navbar />
+          </Suspense>
           <div className="pt-25">{children}</div>
         </ClerkProvider>
         <Toaster />
