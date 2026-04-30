@@ -332,6 +332,9 @@
   .nav-user-name {
     @apply hidden sm:inline text-base font-medium text-black;
   }
+  .navbar-search-wrapper {
+    @apply hidden lg:flex items-center w-full max-w-md;
+  }
 
   /* ===========================================
      BANNER/ALERT COMPONENTS
@@ -377,7 +380,7 @@
     @apply max-w-7xl px-5 mx-auto w-full pt-20 sm:pt-28 min-h-screen pb-12;
   }
   .library-filter-bar {
-    @apply mb-5 md:mb-9 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4;
+    @apply mb-5 md:mb-9 flex flex-col gap-2;
   }
   .auth-footer {
     @apply mt-10 text-center text-sm text-(--text-secondary) max-w-md;
@@ -546,10 +549,34 @@
     @apply font-normal text-sm text-[#222c37] leading-5;
   }
   .library-search-wrapper {
-    @apply flex items-center bg-white border border-[var(--border-subtle)] rounded-lg overflow-hidden w-full sm:w-80;
+    @apply flex items-center w-full max-w-3xl rounded-full border border-transparent bg-[#f4ead7] overflow-hidden transition-all duration-200;
+  }
+  .library-search-wrapper:hover {
+    @apply border-[#c8a06f] bg-[#f2e4cd];
+    box-shadow: 0 0 0 3px rgba(171, 118, 66, 0.08);
+  }
+  .library-search-wrapper:focus-within,
+  .library-search-active {
+    @apply border-[#a96836] bg-[#f7ebd8];
+    box-shadow: 0 0 0 3px rgba(169, 104, 54, 0.14);
+  }
+  .library-search-icon {
+    @apply ml-4 h-4 w-4 shrink-0 text-[#8b6a49] transition-colors duration-200;
+  }
+  .library-search-wrapper:hover .library-search-icon,
+  .library-search-wrapper:focus-within .library-search-icon,
+  .library-search-active .library-search-icon {
+    @apply text-[#7b4b24];
   }
   .library-search-input {
-    @apply flex-1 py-2 px-4 outline-none text-[var(--text-primary)] placeholder:text-[var(--text-muted)];
+    @apply flex-1 bg-transparent py-3 px-4 outline-none text-base font-medium text-black placeholder:text-[#927a5e];
+  }
+  .library-search-clear {
+    @apply mr-2 inline-flex h-8 w-8 items-center justify-center rounded-full text-[#8b6a49] transition-colors duration-200;
+
+    &:hover {
+      @apply bg-[#ead7bb] text-[#6e4322];
+    }
   }
   .library-books-grid {
     @apply grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-x-3 md:gap-x-10 gap-y-7 md:gap-y-9;
