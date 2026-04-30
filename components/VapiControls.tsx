@@ -18,25 +18,24 @@ const VapiControls = ({ book }: { book: IBook }) => {
     currentMessage,
     currentUserMessage,
     duration,
+    maxDurationSeconds,
     start,
     stop,
     clearError,
     limitError,
-    isBillingError,
+    redirectToOnError,
   } = useVapi(book);
   const router = useRouter();
 
   useEffect(() => {
     if (limitError) {
       toast.error(limitError);
-      if (isBillingError) {
-        router.push("/subscriptions");
-      } else {
-        router.push("/");
+      if (redirectToOnError) {
+        router.push(redirectToOnError);
       }
       clearError();
     }
-  }, [isBillingError, limitError, router, clearError]);
+  }, [redirectToOnError, limitError, router, clearError]);
 
   const formatDuration = (seconds?: number) => {
     if (typeof seconds !== "number" || !Number.isFinite(seconds)) {
@@ -124,6 +123,9 @@ const VapiControls = ({ book }: { book: IBook }) => {
               <div className="vapi-status-indicator">
                 <span className="vapi-status-text">
                   {formatDuration(duration)}
+                  {maxDurationSeconds > 0
+                    ? ` / ${formatDuration(maxDurationSeconds)}`
+                    : ""}
                 </span>
               </div>
             </div>
