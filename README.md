@@ -1,6 +1,6 @@
 # 📚 Bookified – AI Voice Book Companion
 
-![Project Status](https://img.shields.io/badge/status-in--progress-yellow)
+![Project Status](https://img.shields.io/badge/status-complete-green)
 
 This project is currently **in progress** and is being built while following the **JavaScript Mastery Next.js 16 course**.
 
@@ -57,7 +57,6 @@ This project focuses on learning and implementing:
 **TypeScript** – Static typing for maintainable and scalable code  
 **MongoDB & Mongoose** – Database for storing users, books, and transcripts  
 **Vapi** – Real-time voice AI conversation engine  
-**ElevenLabs** – Natural AI voice synthesis and persona previews  
 **Clerk** – Authentication and user management  
 **Tailwind CSS** – Utility-first styling framework  
 **shadcn/ui** – Accessible component system built on Tailwind and Radix UI
@@ -142,11 +141,6 @@ MONGODB_URI=
 NEXT_PUBLIC_VAPI_API_KEY=
 VAPI_SERVER_SECRET=
 
-# Google Gemini
-GOOGLE_GEMINI_API_KEY=
-
-# ElevenLabs
-ELEVENLABS_API_KEY=
 ```
 
 Replace the placeholder values with your own credentials.
