@@ -31,22 +31,26 @@ export const startVoiceSession = async (
     }
 
     await connectToDatabase();
-    const billingPeriodStart = getCurrentBillingPeriodStart();
+    const now = new Date();
+    const billingPeriodStart = getCurrentBillingPeriodStart(now);
+    const billingPeriodEnd = getNextBillingPeriodStart(now);
+    const maxSessionsPerMonth = plan.limits.maxSessionsPerMonth;
+    const billingPeriodQuery = {
+      clerkId: userId,
+      startedAt: {
+        $gte: billingPeriodStart,
+        $lt: billingPeriodEnd,
+      },
+    };
 
-    if (plan.limits.maxSessionsPerMonth !== null) {
-      const billingPeriodEnd = getNextBillingPeriodStart();
-      const currentMonthSessionCount = await VoiceSession.countDocuments({
-        clerkId: userId,
-        startedAt: {
-          $gte: billingPeriodStart,
-          $lt: billingPeriodEnd,
-        },
-      });
+    if (maxSessionsPerMonth !== null) {
+      const currentMonthSessionCount =
+        await VoiceSession.countDocuments(billingPeriodQuery);
 
-      if (currentMonthSessionCount >= plan.limits.maxSessionsPerMonth) {
+      if (currentMonthSessionCount >= maxSessionsPerMonth) {
         return {
           success: false,
-          error: `You've reached the ${plan.limits.maxSessionsPerMonth} voice sessions included in your ${plan.label} plan for this month. Upgrade to continue.`,
+          error: `You've reached the ${maxSessionsPerMonth} voice sessions included in your ${plan.label} plan for this month. Upgrade to continue.`,
         };
       }
     }
@@ -54,10 +58,24 @@ export const startVoiceSession = async (
     const session = await VoiceSession.create({
       clerkId: userId,
       bookId,
-      startedAt: new Date(),
+      startedAt: now,
       billingPeriodStart,
       durationSeconds: 0,
     });
+
+    if (maxSessionsPerMonth !== null) {
+      const updatedMonthSessionCount =
+        await VoiceSession.countDocuments(billingPeriodQuery);
+
+      if (updatedMonthSessionCount > maxSessionsPerMonth) {
+        await VoiceSession.deleteOne({ _id: session._id });
+
+        return {
+          success: false,
+          error: `You've reached the ${maxSessionsPerMonth} voice sessions included in your ${plan.label} plan for this month. Upgrade to continue.`,
+        };
+      }
+    }
 
     return {
       success: true,

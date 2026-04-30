@@ -197,7 +197,19 @@ const SubscriptionPricingTable = () => {
                     {isDowngrading ? "Downgrading..." : "Switch to free"}
                   </button>
                 ) : isCheckoutReady ? (
-                  <Show when="signed-in">
+                  <Show
+                    when="signed-in"
+                    fallback={
+                      <SignInButton mode="modal">
+                        <button
+                          type="button"
+                          className="subscription-card-button"
+                        >
+                          Sign in to switch plan
+                        </button>
+                      </SignInButton>
+                    }
+                  >
                     <CheckoutButton
                       planId={paidPlanId!}
                       planPeriod="month"

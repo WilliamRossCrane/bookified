@@ -765,11 +765,13 @@
 
 .subscription-eyebrow {
   @apply rounded-full border border-[var(--border-subtle)] bg-white px-4 py-1.5 text-sm font-medium tracking-[0.18em] uppercase text-[#8B7355];
+
   box-shadow: var(--shadow-soft-sm);
 }
 
 .subscription-plan-summary {
   @apply inline-flex items-center gap-3 rounded-full border border-[var(--border-subtle)] bg-white px-5 py-2;
+
   box-shadow: var(--shadow-soft-sm);
 }
 
@@ -784,6 +786,7 @@
 .subscription-sign-in-card,
 .subscription-loading-card {
   @apply mx-auto flex min-h-52 w-full max-w-3xl flex-col items-center justify-center gap-4 rounded-[1.5rem] border border-[var(--border-subtle)] bg-white px-6 py-12 text-center;
+
   box-shadow: var(--shadow-soft-md);
 }
 
@@ -793,6 +796,7 @@
 
 .subscription-card {
   @apply flex min-h-[430px] flex-col rounded-[1.5rem] border border-[var(--border-subtle)] bg-white overflow-hidden;
+
   box-shadow: var(--shadow-soft-md);
 }
 
@@ -838,6 +842,7 @@
 
 .subscription-feature-list li::before {
   content: "✓";
+
   @apply absolute left-0 top-0 font-semibold text-[#8B7355];
 }
 
@@ -847,16 +852,19 @@
 
 .subscription-card-button {
   @apply flex h-12 w-full items-center justify-center rounded-xl bg-[#212a3b] px-4 text-lg font-medium text-white transition-all;
+
   box-shadow: var(--shadow-soft);
 }
 
 .subscription-card-button:hover {
   @apply bg-[#3d485e];
+
   box-shadow: var(--shadow-soft-md);
 }
 
 .subscription-card-button-disabled {
   @apply cursor-default bg-[#f3e4c7] text-[#212a3b];
+
   box-shadow: none;
 }
 
@@ -866,6 +874,7 @@
 
 .subscription-secondary-button {
   @apply inline-flex h-12 items-center justify-center rounded-xl border border-[var(--border-subtle)] bg-white px-6 text-base font-medium text-[#212a3b] transition-all;
+
   box-shadow: var(--shadow-soft-sm);
 }
 

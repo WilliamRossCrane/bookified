@@ -244,9 +244,9 @@ export function useVapi(book: IBook) {
 
       // End active session on unmount
       if (activeSessionId) {
+        sessionIdRef.current = null;
         vapi.stop();
         finalizeSession(activeSessionId, "unmount");
-        sessionIdRef.current = null;
       }
       // Cleanup handlers
       Object.entries(handlers).forEach(([event, handler]) => {
